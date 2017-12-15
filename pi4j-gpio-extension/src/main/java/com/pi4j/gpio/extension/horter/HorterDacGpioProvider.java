@@ -41,14 +41,14 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 /**
  * <p>
  * This GPIO provider implements the horter DAC I2C GPIO expansion board as native Pi4J GPIO pins.
- * It is a 10-bit DAC providing 5 output channels.
+ * It is a 10-bit DAC providing 4 output channels.
  * More information about the board can be found here:
  * https://www.horter-shop.de/de/home/93-bausatz-i2c-analog-input-modul-5-kanal-10-bit-4260404260752.html
  *
  * </p>
  *
  * <p>
- * The horter DAC is connected via I2C connection to the Raspberry Pi and provides 5 analog output channels.
+ * The horter DAC is connected via I2C connection to the Raspberry Pi and provides 4 analog output channels.
  * The values set are in the range [0:1023] (max 10 bit value).
  * </p>
  *
@@ -88,6 +88,11 @@ public class HorterDacGpioProvider extends DacGpioProviderBase implements DacGpi
     @Override
     public void shutdown() {
 
+        // prevent reentrant
+        if (isShutdown()) {
+            return;
+        }
+
         super.shutdown();
 
         // if we are the owner of the I2C bus, then close it
@@ -115,14 +120,13 @@ public class HorterDacGpioProvider extends DacGpioProviderBase implements DacGpi
     public void setValue(Pin pin, double value) {
 
         // validate range
-        if (value <= getMinSupportedValue()) {
+        if (value < getMinSupportedValue()) {
             value = getMinSupportedValue();
-        } else if (value >= getMaxSupportedValue()) {
+        } else if (value > getMaxSupportedValue()) {
             value = getMaxSupportedValue();
         }
 
-        // the DAC only supports integer values between 0..1023
-        int write_value = (int) value;
+        int intValue = (int) value;
 
         try {
             String pinName = pin.getName();
@@ -132,17 +136,17 @@ public class HorterDacGpioProvider extends DacGpioProviderBase implements DacGpi
             if (HorterDacPin.GPIO_00.getName().equals(pinName)) {
                 buffer[0] = 0x00;
             } else if (HorterDacPin.GPIO_01.getName().equals(pinName)) {
-                buffer[0] = 0x02;
+                buffer[0] = 0x01;
             } else if (HorterDacPin.GPIO_02.getName().equals(pinName)) {
-                buffer[0] = 0x04;
+                buffer[0] = 0x02;
             } else if (HorterDacPin.GPIO_03.getName().equals(pinName)) {
-                buffer[0] = 0x06;
-            } else if (HorterDacPin.GPIO_04.getName().equals(pinName)) {
-                buffer[0] = 0x08;
+                buffer[0] = 0x03;
+            } else {
+                return;
             }
 
-            buffer[1] = (byte) (write_value << 4); // lsb
-            buffer[2] = (byte) (write_value >> 4); // msb
+            buffer[1] = (byte) (intValue & 0xff); // lsb
+            buffer[2] = (byte) ((intValue >> 8) & 0xff); // msb
 
             // write packet of data to the I2C bus
             device.write(buffer, 0, buffer.length);
@@ -161,7 +165,7 @@ public class HorterDacGpioProvider extends DacGpioProviderBase implements DacGpi
      */
     @Override
     public double getMinSupportedValue() {
-        return 0;
+        return MIN_VALUE;
     }
 
     /**
@@ -171,6 +175,6 @@ public class HorterDacGpioProvider extends DacGpioProviderBase implements DacGpi
      */
     @Override
     public double getMaxSupportedValue() {
-        return 1023;
+        return MAX_VALUE;
     }
 }

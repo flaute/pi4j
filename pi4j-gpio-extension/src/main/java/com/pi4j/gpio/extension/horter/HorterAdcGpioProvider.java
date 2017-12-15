@@ -176,7 +176,7 @@ public class HorterAdcGpioProvider extends AdcGpioProviderBase implements AdcGpi
      */
     @Override
     public double getMinSupportedValue() {
-        return 0;
+        return MIN_VALUE;
     }
 
     /**
@@ -186,6 +186,6 @@ public class HorterAdcGpioProvider extends AdcGpioProviderBase implements AdcGpi
      */
     @Override
     public double getMaxSupportedValue() {
-        return 1023;
+        return MAX_VALUE;
     }
 }

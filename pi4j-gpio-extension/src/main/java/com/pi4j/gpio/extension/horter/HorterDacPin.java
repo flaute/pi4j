@@ -37,14 +37,14 @@ import com.pi4j.io.gpio.impl.PinImpl;
 /**
  * <p>
  * This GPIO provider implements the horter DAC I2C GPIO expansion board as native Pi4J GPIO pins.
- * It is a 10-bit DAC providing 5 output channels.
+ * It is a 10-bit DAC providing 4 output channels.
  * More information about the board can be found here:
  * https://www.horter-shop.de/de/home/93-bausatz-i2c-analog-input-modul-5-kanal-10-bit-4260404260752.html
  *
  * </p>
  *
  * <p>
- * The horter DAC is connected via I2C connection to the Raspberry Pi and provides 5 analog output channels.
+ * The horter DAC is connected via I2C connection to the Raspberry Pi and provides 4 analog output channels.
  * The values set are in the range [0:1023] (max 10 bit value).
  * </p>
  *
@@ -57,10 +57,9 @@ public class HorterDacPin {
     public static final Pin GPIO_01 = createAnalogOutputPin(1, "ANALOG OUTPUT 1");
     public static final Pin GPIO_02 = createAnalogOutputPin(2, "ANALOG OUTPUT 2");
     public static final Pin GPIO_03 = createAnalogOutputPin(3, "ANALOG OUTPUT 3");
-    public static final Pin GPIO_04 = createAnalogOutputPin(4, "ANALOG OUTPUT 4");
 
-    public static Pin[] ALL = { HorterDacPin.GPIO_00, HorterDacPin.GPIO_01, HorterDacPin.GPIO_02, HorterDacPin.GPIO_03,
-            HorterDacPin.GPIO_04 };
+    public static Pin[] ALL = { HorterDacPin.GPIO_00, HorterDacPin.GPIO_01, HorterDacPin.GPIO_02,
+            HorterDacPin.GPIO_03 };
 
     private static Pin createAnalogOutputPin(int channel, String name) {
         return new PinImpl(HorterDacGpioProvider.NAME, channel, name, EnumSet.of(PinMode.ANALOG_OUTPUT));
