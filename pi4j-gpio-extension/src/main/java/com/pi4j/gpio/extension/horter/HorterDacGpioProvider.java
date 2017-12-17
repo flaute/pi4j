@@ -44,7 +44,6 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
  * It is a 10-bit DAC providing 4 output channels.
  * More information about the board can be found here:
  * https://www.horter-shop.de/de/home/93-bausatz-i2c-analog-input-modul-5-kanal-10-bit-4260404260752.html
- *
  * </p>
  *
  * <p>
@@ -83,6 +82,11 @@ public class HorterDacGpioProvider extends DacGpioProviderBase implements DacGpi
 
         // create I2C device instance
         device = bus.getDevice(address);
+
+        // reset all default pin cache values
+        for (Pin pin : HorterDacPin.ALL) {
+            getPinCache(pin).setAnalogValue(0);
+        }
     }
 
     @Override
@@ -113,8 +117,8 @@ public class HorterDacGpioProvider extends DacGpioProviderBase implements DacGpi
     /**
      * Set the analog output value to an output pin on the DAC immediately.
      *
-     * @param pin analog output pin
-     * @param value raw value to send to the DAC. (Between: 0..4095)
+     * @param pin The analog output pin.
+     * @param value The raw value to send to the DAC.
      */
     @Override
     public void setValue(Pin pin, double value) {

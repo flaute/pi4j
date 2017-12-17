@@ -40,7 +40,6 @@ import com.pi4j.io.gpio.impl.PinImpl;
  * It is a 10-bit DAC providing 4 output channels.
  * More information about the board can be found here:
  * https://www.horter-shop.de/de/home/93-bausatz-i2c-analog-input-modul-5-kanal-10-bit-4260404260752.html
- *
  * </p>
  *
  * <p>
